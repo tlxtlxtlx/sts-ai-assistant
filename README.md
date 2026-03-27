@@ -1,18 +1,85 @@
 ﻿# 杀戮尖塔 AI 顾问
 
-这是一个基于 `Communication Mod -> Python 后端 -> 本地 HTTP API -> Vue 页面 / 游戏内浮层` 的《杀戮尖塔》中文顾问项目。
+一个面向《杀戮尖塔》的中文 AI 顾问项目，基于 `Communication Mod -> Python 后端 -> 本地 HTTP API -> Vue 页面 / 游戏内浮层` 链路工作。
 
-项目定位很明确：
+它不是自动打牌脚本，而是一个“局内决策助手”：把当前局面的关键信息整理成更适合玩家阅读的中文建议，帮助你在奖励、商店、地图、事件和战斗阶段更快做决定。
 
-- 它是“顾问”，不是自动打牌脚本
-- 网页端和游戏内浮层共用同一套本地后端
-- 所有用户可见结果统一展示为：
-  - `结论`
-  - `原因`
-  - `备选`
-- 即使没有配置外部模型，也会返回中文兜底结果，不会直接报 500
+## 项目亮点
+
+- 双端可用
+  - 网页端可看状态、聊天提问、一键分析、查看历史
+  - 游戏内浮层支持 `F8` 打开、`F9` 分析、`Enter` 提问、`Esc` 关闭
+- 中文优先
+  - 自动建议、手动分析、聊天答复统一展示为 `结论 / 原因 / 备选`
+- 本地链路清晰
+  - 后端统一提供分析能力，网页端和游戏内浮层共用同一套 localhost API
+- 环境隔离
+  - `.venv`、`.pip-cache`、`.npm-cache`、`.gradle` 都固定在项目目录内
+- 兜底可用
+  - 即使没有配置外部模型，也会返回中文兜底结果，不会直接报 500
+
+## 适合谁
+
+- 想把《杀戮尖塔》做成“可对话顾问”的玩家
+- 已经在用 `Communication Mod`，想把状态接到本地网页或游戏内浮层的人
+- 不想依赖 Claude Code，但希望继续使用 OpenAI 兼容接口的人
+
+## 快速开始
+
+如果你只想先跑起来，按下面走即可。
+
+### 1. 初始化 Python 虚拟环境
+
+```powershell
+powershell -ExecutionPolicy Bypass -File .\scripts\setup_python_env.ps1
+```
+
+### 2. 安装前端依赖
+
+```powershell
+$env:npm_config_cache = "E:\sts_ai_assistant\.npm-cache"
+npm.cmd --prefix frontend install
+```
+
+### 3. 配置模型
+
+- 编辑 `config\app_config.local.json`
+- 参考 `config\app_config.example.json`
+
+### 4. 配置 `Communication Mod`
+
+- 把 `communication_mod_command.txt` 里的整行 `command=` 复制到：
+  - `%LOCALAPPDATA%\ModTheSpire\CommunicationMod\config.properties`
+
+### 5. 启动本地服务
+
+```powershell
+powershell -ExecutionPolicy Bypass -File .\scripts\start_all_local.ps1
+```
+
+### 6. 启动游戏
+
+- 从 Steam 启动《杀戮尖塔》
+- 在 ModTheSpire 中启用 `BaseMod` 和 `Communication Mod`
+- 进入一局游戏
+- 打开 `http://127.0.0.1:5173`
 
 如果你是通过 Steam 创意工坊装 Mod，请直接配合阅读 [STEAM_WORKSHOP_SETUP.md](./STEAM_WORKSHOP_SETUP.md)。
+
+## 当前状态
+
+已经完成：
+
+- Python 后端状态接收与本地 API
+- 中文三段式顾问结果
+- 网页端聊天、一键分析、历史展示
+- 游戏内浮层 mod 骨架和热键交互
+- 工作区内虚拟环境 / 缓存 / Gradle 目录隔离
+
+当前限制：
+
+- 游戏状态采集仍然依赖 `Communication Mod`
+- 游戏内浮层 mod 真正执行 `build` 之前，仍需先补齐 `vendor\slay-the-spire` 中的依赖 jar
 
 ## 当前仓库包含什么
 
