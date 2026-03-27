@@ -1,0 +1,88 @@
+{
+  "available_commands": ["play", "end", "key", "click", "wait", "state"],
+  "ready_for_command": true,
+  "in_game": true,
+  "game_state": {
+    "screen_type": "CARD_REWARD",
+    "screen_state": {
+      "cards": [
+        {
+          "id": "ShrugItOff",
+          "name": "Shrug It Off",
+          "cost": 1,
+          "upgrades": 0,
+          "type": "SKILL",
+          "rarity": "COMMON"
+        },
+        {
+          "id": "PommelStrike",
+          "name": "Pommel Strike",
+          "cost": 1,
+          "upgrades": 0,
+          "type": "ATTACK",
+          "rarity": "COMMON"
+        },
+        {
+          "id": "Inflame",
+          "name": "Inflame",
+          "cost": 1,
+          "upgrades": 0,
+          "type": "POWER",
+          "rarity": "UNCOMMON"
+        }
+      ]
+    },
+    "deck": [
+      {
+        "id": "Strike_R",
+        "name": "Strike",
+        "cost": 1,
+        "upgrades": 0,
+        "type": "ATTACK",
+        "rarity": "BASIC",
+        "uuid": "card-1"
+      },
+      {
+        "id": "Strike_R",
+        "name": "Strike",
+        "cost": 1,
+        "upgrades": 0,
+        "type": "ATTACK",
+        "rarity": "BASIC",
+        "uuid": "card-2"
+      },
+      {
+        "id": "Defend_R",
+        "name": "Defend",
+        "cost": 1,
+        "upgrades": 0,
+        "type": "SKILL",
+        "rarity": "BASIC",
+        "uuid": "card-3"
+      },
+      {
+        "id": "Bash",
+        "name": "Bash",
+        "cost": 2,
+        "upgrades": 0,
+        "type": "ATTACK",
+        "rarity": "BASIC",
+        "uuid": "card-4"
+      }
+    ],
+    "relics": [
+      {
+        "id": "Burning Blood",
+        "name": "Burning Blood",
+        "counter": -1
+      }
+    ],
+    "floor": 3,
+    "ascension_level": 20,
+    "gold": 114,
+    "act": 1,
+    "current_hp": 61,
+    "max_hp": 80,
+    "class": "IRONCLAD"
+  }
+}

@@ -1,0 +1,2 @@
+# This scaffold currently uses only the Python standard library.
+# Add provider SDKs later inside .venv when wiring a real LLM endpoint.

@@ -1,0 +1,25 @@
+{
+  "transport": {
+    "mode": "stdio",
+    "wait_frames": 30
+  },
+  "api": {
+    "host": "127.0.0.1",
+    "port": 8765
+  },
+  "llm": {
+    "base_url": "https://openrouter.ai/api/v1",
+    "api_key": "your_openrouter_key",
+    "model": "stepfun/step-3.5-flash:free",
+    "site_url": "http://127.0.0.1:5173",
+    "app_name": "STS AI Assistant"
+  },
+  "output": {
+    "recommendation_file": "logs/recommendations.jsonl",
+    "current_state_file": "logs/current_state.json"
+  },
+  "logging": {
+    "level": "INFO",
+    "file": "logs/sts_ai_assistant.log"
+  }
+}

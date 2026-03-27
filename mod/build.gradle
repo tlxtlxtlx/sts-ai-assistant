@@ -1,0 +1,72 @@
+plugins {
+    id 'java'
+}
+
+group = 'com.stsassistant'
+version = '0.1.0'
+
+sourceCompatibility = JavaVersion.VERSION_1_8
+targetCompatibility = JavaVersion.VERSION_1_8
+
+def localProps = new Properties()
+def localPropsFile = file('local.properties')
+if (localPropsFile.exists()) {
+    localPropsFile.withInputStream { localProps.load(it) }
+}
+
+def stsJar = localProps.getProperty('sts.jar')
+def basemodJar = localProps.getProperty('basemod.jar')
+def modTheSpireJar = localProps.getProperty('modthespire.jar')
+
+repositories {
+    mavenCentral()
+}
+
+dependencies {
+    if (stsJar) {
+        implementation files(stsJar)
+    }
+    if (basemodJar) {
+        implementation files(basemodJar)
+    }
+    if (modTheSpireJar) {
+        implementation files(modTheSpireJar)
+    }
+}
+
+tasks.withType(JavaCompile) {
+    options.encoding = 'UTF-8'
+}
+
+jar {
+    archiveBaseName = 'sts-ingame-assistant'
+    manifest {
+        attributes(
+            'Implementation-Title': 'STS Ingame Assistant',
+            'Implementation-Version': version
+        )
+    }
+}
+
+task verifyLocalSetup {
+    doLast {
+        def missing = []
+        if (!stsJar) missing << 'sts.jar'
+        if (!basemodJar) missing << 'basemod.jar'
+        if (!modTheSpireJar) missing << 'modthespire.jar'
+        if (!missing.isEmpty()) {
+            throw new GradleException("Missing local.properties entries: ${missing.join(', ')}")
+        }
+        missing.clear()
+        [stsJar, basemodJar, modTheSpireJar].findAll { it }.each { jarPath ->
+            if (!file(jarPath).exists()) {
+                missing << jarPath
+            }
+        }
+        if (!missing.isEmpty()) {
+            throw new GradleException("Missing dependency jars: ${missing.join(', ')}")
+        }
+    }
+}
+
+compileJava.dependsOn verifyLocalSetup

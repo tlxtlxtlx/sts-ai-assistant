@@ -1,0 +1,37 @@
+:root {
+  color-scheme: light;
+  font-family: "Microsoft YaHei", "PingFang SC", "Segoe UI", sans-serif;
+  line-height: 1.5;
+  font-weight: 400;
+  color: #24170f;
+  background:
+    radial-gradient(circle at top left, rgba(210, 126, 40, 0.18), transparent 32%),
+    radial-gradient(circle at right 20%, rgba(122, 56, 16, 0.12), transparent 28%),
+    linear-gradient(180deg, #f5ecdd 0%, #e8d5b0 48%, #dec397 100%);
+  font-synthesis: none;
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  min-width: 320px;
+  min-height: 100vh;
+  background: transparent;
+}
+
+button,
+input,
+textarea,
+select {
+  font: inherit;
+}
+
+#app {
+  min-height: 100vh;
+}

@@ -1,0 +1,17 @@
+.venv/
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+.pytest_cache/
+logs/
+.npm-cache/
+.gradle/
+.idea/
+frontend/node_modules/
+frontend/dist/
+mod/build/
+mod/local.properties
+vendor/slay-the-spire/*.jar
+.env
+config/app_config.local.json

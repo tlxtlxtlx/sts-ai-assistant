@@ -1,0 +1,5 @@
+[project]
+name = "sts-ai-assistant"
+version = "0.1.0"
+description = "Slay the Spire deck-building assistant scaffold"
+requires-python = ">=3.10"
