@@ -83,6 +83,21 @@ class RuleBasedAdvisor:
         shop_keywords = ("商店", "删牌", "删除", "移除", "purge", "remove", "shop", "该买吗", "买哪", "值得买吗")
         combat_keywords = ("出哪", "先出", "怎么打", "顺序", "play", "combat", "回合")
 
+        if "缺什么" in lowered or "缺啥" in lowered or "缺哪块" in lowered:
+            return self._reply_for_build_gap(snapshot, source=source)
+
+        if (
+            "为什么不删牌" in lowered
+            or ("删牌" in lowered and "为什么" in lowered)
+            or ("推荐删牌" in lowered and "为什么" in lowered)
+        ):
+            return self._reply_for_remove_timing(snapshot, source=source)
+
+        if ("接下来" in lowered and ("找什么" in lowered or "该找" in lowered)) or (
+            "两场" in lowered and ("找什么" in lowered or "该找" in lowered)
+        ):
+            return self._reply_for_next_picks(snapshot, source=source)
+
         if screen_type == "CARD_REWARD" or any(keyword in lowered for keyword in reward_keywords):
             reply = self.analyze(snapshot, source=source)
             if reply is not None:
@@ -106,6 +121,166 @@ class RuleBasedAdvisor:
                 return self._reply_from_recommendation(recommendation, source=source)
 
         return None
+
+    def _reply_for_build_gap(self, snapshot: GameSnapshot, source: str) -> AssistantReply:
+        profile = self.build_profiles.evaluate(snapshot)
+        recommendation = self.recommend(snapshot)
+        raw = recommendation.raw_response if recommendation is not None else {}
+        fills_gap = self._as_text(raw.get("fills_gap")) if raw else None
+        gap_label = self._gap_label(profile, fills_gap)
+        next_targets = profile.two_fight_goal[:2] or profile.next_picks[:2] or profile.missing_pieces[:2]
+
+        reasons: list[str] = []
+        if fills_gap:
+            reasons.append(fills_gap)
+        else:
+            reasons.append(f"你当前更像“{profile.name}”，还缺一块能让回合更稳的直接补强。")
+        if recommendation is not None and recommendation.primary_target:
+            reasons.append(f"这也是为什么当前更推荐优先处理“{recommendation.primary_target}”。")
+        if next_targets:
+            reasons.append(f"接下来两场优先找“{' / '.join(next_targets)}”，先把这块补完整。")
+        if profile.risks:
+            reasons.append(f"如果一直不补，最容易出现的问题是：{profile.risks[0]}。")
+
+        alternatives = recommendation.alternatives[:2] if recommendation is not None else []
+        if next_targets:
+            alternatives = list(dict.fromkeys([*alternatives, *next_targets[:1]]))[:3]
+
+        return AssistantReply(
+            mode="chat",
+            source=source,
+            conclusion=f"当前这套牌最缺{gap_label}。",
+            reasons=self._dedupe_lines(reasons)[:4],
+            alternatives=alternatives,
+            build_direction=(recommendation.build_direction if recommendation and recommendation.build_direction else profile.route_stage or profile.name),
+            raw_response={
+                "rule_based": True,
+                "question_type": "build_gap",
+                "build_profile": profile.to_dict(),
+                "recommendation": recommendation.to_dict() if recommendation is not None else None,
+            },
+        )
+
+    def _reply_for_remove_timing(self, snapshot: GameSnapshot, source: str) -> AssistantReply:
+        profile = self.build_profiles.evaluate(snapshot)
+        recommendation = self.recommend(snapshot)
+        remove_target = self._best_remove_target(snapshot)
+        screen_type = snapshot.context.screen_type.upper()
+
+        if screen_type in {"SHOP", "SHOP_SCREEN"}:
+            shop_recommendation = self._recommend_shop(snapshot)
+            if shop_recommendation is not None and shop_recommendation.suggested_action.upper() == "REMOVE":
+                target = shop_recommendation.primary_target or remove_target
+                reasons = [line.strip() for line in shop_recommendation.reasoning.splitlines() if line.strip()]
+                if target:
+                    reasons.append(f"删掉“{target}”以后，后面更容易抽到你真正想要的牌。")
+                if profile.next_picks:
+                    reasons.append(f"删完以后，接下来还是优先补“{' / '.join(profile.next_picks[:2])}”。")
+                return AssistantReply(
+                    mode="chat",
+                    source=source,
+                    conclusion=f"这家商店更推荐先删“{target}”。" if target else "这家商店更推荐先删牌。",
+                    reasons=self._dedupe_lines(reasons)[:4],
+                    alternatives=shop_recommendation.alternatives[:3],
+                    build_direction=shop_recommendation.build_direction,
+                    raw_response={
+                        "rule_based": True,
+                        "question_type": "remove_timing",
+                        "recommendation": shop_recommendation.to_dict(),
+                    },
+                )
+
+            reasons = ["这家商店当前更值的是先处理能立刻提升强度的项目，删牌优先级没那么高。"]
+            if shop_recommendation is not None and shop_recommendation.primary_target:
+                reasons.append(f"和删牌相比，这次更赚的是先拿“{shop_recommendation.primary_target}”。")
+            if remove_target:
+                reasons.append(f"如果后面还有机会进商店，再考虑删“{remove_target}”。")
+            if profile.risks:
+                reasons.append(f"你当前更需要先解决的是：{profile.risks[0]}。")
+            return AssistantReply(
+                mode="chat",
+                source=source,
+                conclusion="这家商店现在先不急着删牌。",
+                reasons=self._dedupe_lines(reasons)[:4],
+                alternatives=[item for item in [remove_target, *(profile.next_picks[:2])] if item][:3],
+                build_direction=(shop_recommendation.build_direction if shop_recommendation is not None else profile.route_stage or profile.name),
+                raw_response={
+                    "rule_based": True,
+                    "question_type": "remove_timing",
+                    "recommendation": shop_recommendation.to_dict() if shop_recommendation is not None else None,
+                },
+            )
+
+        reasons = ["当前不是商店节点，删牌这件事要等到商店才能真正执行。"]
+        if recommendation is not None and recommendation.primary_target:
+            reasons.append(f"这层更该先处理“{recommendation.primary_target}”这种能立刻变强的选择。")
+        if remove_target:
+            reasons.append(f"等后面进商店时，再优先考虑删“{remove_target}”。")
+        if (snapshot.floor or 0) <= 6:
+            reasons.append("第一幕前几层通常先保血和补直接战力，比提前纠结删牌更重要。")
+        elif profile.next_picks:
+            reasons.append(f"你现在更该先补“{' / '.join(profile.next_picks[:2])}”。")
+
+        return AssistantReply(
+            mode="chat",
+            source=source,
+            conclusion="现在先不急着删牌。",
+            reasons=self._dedupe_lines(reasons)[:4],
+            alternatives=[item for item in [remove_target, *(profile.next_picks[:2])] if item][:3],
+            build_direction=(recommendation.build_direction if recommendation and recommendation.build_direction else profile.route_stage or profile.name),
+            raw_response={
+                "rule_based": True,
+                "question_type": "remove_timing",
+                "recommendation": recommendation.to_dict() if recommendation is not None else None,
+            },
+        )
+
+    def _reply_for_next_picks(self, snapshot: GameSnapshot, source: str) -> AssistantReply:
+        profile = self.build_profiles.evaluate(snapshot)
+        recommendation = self.recommend(snapshot)
+        goals = profile.two_fight_goal[:2] or profile.next_picks[:2] or profile.missing_pieces[:2]
+        goal_text = " / ".join(goals) if goals else "直接变强的牌"
+
+        reasons = [f"你当前更像“{profile.name}”，先把这块补齐，后面更容易定主路线。"]
+        if profile.route_stage:
+            reasons.append(f"这局现在先学的是：{profile.route_stage}。")
+        if recommendation is not None and recommendation.primary_target:
+            reasons.append(f"眼前这一步如果能拿到“{recommendation.primary_target}”，也算是在往这条线补。")
+        if profile.avoid_now:
+            reasons.append(f"现在先别急着碰：{profile.avoid_now[0]}。")
+
+        return AssistantReply(
+            mode="chat",
+            source=source,
+            conclusion=f"接下来两场优先找“{goal_text}”。",
+            reasons=self._dedupe_lines(reasons)[:4],
+            alternatives=goals[:3],
+            build_direction=(recommendation.build_direction if recommendation and recommendation.build_direction else profile.route_stage or profile.name),
+            raw_response={
+                "rule_based": True,
+                "question_type": "next_picks",
+                "build_profile": profile.to_dict(),
+                "recommendation": recommendation.to_dict() if recommendation is not None else None,
+            },
+        )
+
+    def _gap_label(self, profile: BuildProfile, fills_gap: str | None) -> str:
+        text = fills_gap or ""
+        if "防守" in text or "稳定" in text or "掉血" in text:
+            return "防守和回合稳定"
+        if "过牌" in text or "运转" in text or "能量" in text:
+            return "过牌和运转"
+        if "路线支点" in text or "路线" in text or "核心" in text:
+            return "明确的路线支点"
+        if "长期成长" in text:
+            return "长期成长"
+        if "战力" in text or "输出" in text:
+            return "眼前战力"
+        if profile.missing_pieces:
+            return profile.missing_pieces[0]
+        if profile.next_picks:
+            return profile.next_picks[0]
+        return "能让回合更稳的直接强度"
 
     def _recommend_shop(self, snapshot: GameSnapshot) -> RecommendationResult | None:
         shop = snapshot.context.shop
@@ -345,6 +520,9 @@ class RuleBasedAdvisor:
                 "route_family": best.route_family,
                 "confidence": self._confidence_from_gap(best.score - (evaluations[1].score if len(evaluations) > 1 else 0.0)),
                 "opportunity_cost": self._card_opportunity_cost(best_name, evaluations[1:3]),
+                "learning_rule": self._learning_rule_for_reward(snapshot, best),
+                "fills_gap": self._fills_gap_for_reward(snapshot, build_profile, best),
+                "safe_default": self._safe_default_for_reward(snapshot, best),
                 "scores": [
                     {
                         "card": self._card_name(item.card),
@@ -833,6 +1011,46 @@ class RuleBasedAdvisor:
             return f"如果现在不拿{best_name}，你大概率只能拿到更弱的即时补丁。"
         runner_up = self._card_name(alternatives[0].card)
         return f"如果不拿{best_name}，这次多半就只能退而求其次拿{runner_up}，即时强度会更亏。"
+
+    def _learning_rule_for_reward(self, snapshot: GameSnapshot, evaluation: _RewardEvaluation) -> str:
+        floor = snapshot.floor or 0
+        card_type = (evaluation.card.type or "").upper()
+        if floor <= 6 and evaluation.card.cost is not None and evaluation.card.cost >= 2:
+            return "第一幕前几层先拿不卡手、能立刻减少掉血的牌，慢热高费牌先别急着贪。"
+        if floor <= 6 and card_type == "SKILL":
+            return "新手前几层先把回合质量做顺，比硬补笨重输出更容易稳住血线。"
+        if evaluation.fit_score >= 0.14:
+            return "拿牌时先看它是不是在补你当前路线，而不是只看它单卡强不强。"
+        return "拿牌时先解决当前最明显的短板，别急着为了想象中的后期强行转路线。"
+
+    def _fills_gap_for_reward(
+        self,
+        snapshot: GameSnapshot,
+        profile: BuildProfile,
+        evaluation: _RewardEvaluation,
+    ) -> str:
+        del snapshot
+        del profile
+        card_name = self._card_name(evaluation.card)
+        card_type = (evaluation.card.type or "").upper()
+        if evaluation.route_family in {"defense", "dex", "frost_focus", "block"}:
+            return f"{card_name}主要是在补你现在最缺的防守和回合稳定，不容易一层层白掉血。"
+        if evaluation.route_family in {"discard", "poison", "shiv", "strength", "stance"}:
+            return f"{card_name}是在给当前构筑补路线支点，拿了以后后面更知道该继续找什么。"
+        if card_type == "SKILL":
+            return f"{card_name}主要补的是回合质量，让你更容易把手牌和能量用顺。"
+        if card_type == "POWER":
+            return f"{card_name}补的是长期成长，但前提是你当前已经能稳住前几回合。"
+        return f"{card_name}补的是眼前战力，能让这一幕的战斗更快结束。"
+
+    def _safe_default_for_reward(self, snapshot: GameSnapshot, evaluation: _RewardEvaluation) -> str:
+        card_name = self._card_name(evaluation.card)
+        if evaluation.fit_score >= 0.14:
+            return f"如果你拿不准，这次先照着拿“{card_name}”通常最稳，因为它不会把当前路线带偏。"
+        reward = snapshot.context.card_reward
+        if reward is not None and reward.skip_available:
+            return "如果你还是拿不准，宁可先跳过，也别为了不空过硬拿一张以后可能会卡手的牌。"
+        return f"如果你拿不准，这次先照着拿“{card_name}”，至少能补到当前最直接的缺口。"
 
     def _combat_potion_hint(self, incoming_damage: int, attackers: int, energy: int | None) -> str:
         if incoming_damage >= 18:

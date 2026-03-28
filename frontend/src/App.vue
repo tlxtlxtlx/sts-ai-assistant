@@ -399,6 +399,18 @@ const recommendationRouteAfterPick = computed(() => {
   const value = recommendationRaw.value.route_after_pick;
   return typeof value === "string" && value.trim() ? value.trim() : "待补充";
 });
+const recommendationLearningRule = computed(() => {
+  const value = recommendationRaw.value.learning_rule;
+  return typeof value === "string" && value.trim() ? value.trim() : "前几层先拿能立刻帮你稳住回合的牌。";
+});
+const recommendationFillsGap = computed(() => {
+  const value = recommendationRaw.value.fills_gap;
+  return typeof value === "string" && value.trim() ? value.trim() : "这次推荐主要是在补当前最直接的短板。";
+});
+const recommendationSafeDefault = computed(() => {
+  const value = recommendationRaw.value.safe_default;
+  return typeof value === "string" && value.trim() ? value.trim() : "如果你拿不准，就先照着主推荐走，通常比乱转路线更稳。";
+});
 const combatSequence = computed<string[]>(() => {
   const value = recommendationRaw.value.play_sequence;
   if (Array.isArray(value)) {
@@ -416,6 +428,22 @@ const combatPotionHint = computed(() => {
   const value = recommendationRaw.value.potion_hint;
   return typeof value === "string" && value.trim() ? value.trim() : "暂无额外药水提醒。";
 });
+const combatStepOne = computed(() => {
+  if (recommendationTargetLabel.value !== "--") {
+    return `先用${recommendationTargetLabel.value}起手。`;
+  }
+  return "先做减伤、减攻或最关键的保命动作。";
+});
+const combatStepTwo = computed(() => {
+  if (combatSequence.value.length >= 2) {
+    return `再按${combatSequence.value.slice(1, 3).join(" -> ")}继续打。`;
+  }
+  if ((combatIncomingDamage.value ?? 0) > 0) {
+    return "再把剩余能量优先留给格挡或减伤，先别贪慢热牌。";
+  }
+  return "再把剩余能量补给高质量输出、成长或过牌。";
+});
+const combatStepThree = computed(() => combatPotionHint.value);
 const combatHand = computed<CombatCardView[]>(() => extractCombatHand(rawScreenState.value));
 const combatMonsters = computed<CombatMonsterView[]>(() => extractCombatMonsters(rawScreenState.value));
 const combatEnergy = computed<number | null>(() => extractCombatEnergy(rawScreenState.value));
@@ -442,6 +470,18 @@ const statusSummary = computed(() => {
 });
 const guideLead = computed(() => buildUnifiedGuideLead());
 const guideNotes = computed(() => buildUnifiedGuideNotes());
+const beginnerQuestionTemplates = computed(() => {
+  if (hasCombatContext.value) {
+    return ["这回合先出哪几张？", "这回合要不要交药？", "我这回合先防还是先打？"];
+  }
+  return [
+    "这层该拿牌还是跳过？",
+    "我现在这套牌缺什么？",
+    "接下来两场我该找什么？",
+    "为什么这次更推荐删牌？",
+    "这回合先出哪几张？",
+  ];
+});
 const chatPlaceholder = computed(() => "例如：这张牌为什么值得拿？这回合先打哪张？");
 const quickGuideTitle = computed(() => {
   if (fetchError.value) {
@@ -527,8 +567,8 @@ async function analyzeCurrentState() {
   }
 }
 
-async function sendChat() {
-  const message = chatInput.value.trim();
+async function sendChat(prefilledMessage?: string) {
+  const message = (prefilledMessage ?? chatInput.value).trim();
   if (!message) {
     return;
   }
@@ -556,6 +596,14 @@ async function sendChat() {
   } finally {
     chatLoading.value = false;
   }
+}
+
+function handleSendChat() {
+  void sendChat();
+}
+
+function useQuestionTemplate(template: string) {
+  chatInput.value = template;
 }
 
 function startPolling() {
@@ -1232,18 +1280,6 @@ onBeforeUnmount(stopPolling);
             <span class="panel-stamp">{{ formatTimestamp(activeReply?.created_at ?? assistantState?.updated_at) }}</span>
           </div>
 
-          <section class="player-mode-panel">
-            <div class="player-mode-header">
-              <div>
-                <p class="panel-kicker">辅助理解</p>
-                <h3>这条建议怎么看</h3>
-              </div>
-            </div>
-            <p class="player-mode-lead">{{ guideLead }}</p>
-            <ul class="mode-note-list">
-              <li v-for="note in guideNotes" :key="note">{{ note }}</li>
-            </ul>
-          </section>
 
           <template v-if="activeReply">
             <section class="reply-card">
@@ -1291,9 +1327,41 @@ onBeforeUnmount(stopPolling);
             <section class="reply-card">
               <h3>原因</h3>
               <ul class="reason-list">
-                <li v-for="reason in activeReply.reasons" :key="reason">{{ reason }}</li>
+                <li v-for="reason in activeReply.reasons.slice(0, 3)" :key="reason">{{ reason }}</li>
               </ul>
             </section>
+
+            <section class="reply-card coach-grid-card">
+              <div class="coach-grid">
+                <section class="coach-note-card">
+                  <span>这次学到的判断规则</span>
+                  <strong>{{ recommendationLearningRule }}</strong>
+                </section>
+                <section class="coach-note-card">
+                  <span>这张牌在补什么</span>
+                  <strong>{{ recommendationFillsGap }}</strong>
+                </section>
+                <section class="coach-note-card">
+                  <span>拿不准时先怎么选</span>
+                  <strong>{{ recommendationSafeDefault }}</strong>
+                </section>
+              </div>
+            </section>
+
+          <section class="player-mode-panel inline-guide-panel">
+            <div class="player-mode-header">
+              <div>
+                <p class="panel-kicker">辅助理解</p>
+                <h3>这条建议怎么看</h3>
+              </div>
+            </div>
+            <p class="player-mode-lead">{{ guideLead }}</p>
+            <ul class="mode-note-list">
+              <li v-for="note in guideNotes" :key="note">{{ note }}</li>
+            </ul>
+          </section>
+
+
 
             <section class="reply-card">
               <h3>备选</h3>
@@ -1306,6 +1374,7 @@ onBeforeUnmount(stopPolling);
           <template v-else>
             <section class="reply-card">
               <h3>结论</h3>
+
               <p class="muted-text">还没有分析结果，进入一局游戏后点“一键分析当前局面”。</p>
             </section>
           </template>
@@ -1335,14 +1404,26 @@ onBeforeUnmount(stopPolling);
               </div>
             </div>
 
+            <div class="template-row">
+              <button
+                v-for="template in beginnerQuestionTemplates"
+                :key="template"
+                type="button"
+                class="template-chip"
+                @click="useQuestionTemplate(template)"
+              >
+                {{ template }}
+              </button>
+            </div>
+
             <div class="chat-compose">
               <textarea
                 v-model="chatInput"
                 rows="3"
                 :placeholder="chatPlaceholder"
-                @keydown.enter.exact.prevent="sendChat"
+                @keydown.enter.exact.prevent="handleSendChat"
               />
-              <button type="button" class="primary-button" :disabled="!canSendChat" @click="sendChat">
+              <button type="button" class="primary-button" :disabled="!canSendChat" @click="handleSendChat">
                 {{ chatLoading ? "发送中..." : "发送问题" }}
               </button>
             </div>
@@ -1483,6 +1564,23 @@ onBeforeUnmount(stopPolling);
               <span class="panel-stamp">能量 {{ combatEnergy ?? "?" }}</span>
             </div>
 
+            <section class="reply-card coach-grid-card combat-plan-card">
+              <div class="coach-grid combat-plan-grid">
+                <section class="coach-note-card">
+                  <span>先做什么</span>
+                  <strong>{{ combatStepOne }}</strong>
+                </section>
+                <section class="coach-note-card">
+                  <span>再做什么</span>
+                  <strong>{{ combatStepTwo }}</strong>
+                </section>
+                <section class="coach-note-card">
+                  <span>什么时候交药</span>
+                  <strong>{{ combatStepThree }}</strong>
+                </section>
+              </div>
+            </section>
+
             <div class="summary-grid combat-brief-grid">
               <div class="summary-item">
                 <span>推荐起手</span>
@@ -1493,7 +1591,7 @@ onBeforeUnmount(stopPolling);
                 <strong>{{ combatSequence.length ? combatSequence.join(" -> ") : "先减伤再补输出" }}</strong>
               </div>
               <div class="summary-item">
-                <span>格挡阈值</span>
+                <span>本回合至少要挡多少</span>
                 <strong>{{ combatBlockThreshold ?? combatIncomingDamage ?? "?" }}</strong>
               </div>
               <div class="summary-item">
@@ -1552,20 +1650,20 @@ onBeforeUnmount(stopPolling);
               <p class="build-summary">{{ buildProfile.summary }}</p>
               <div class="summary-grid build-grid">
                 <div class="summary-item">
-                  <span>当前路线</span>
-                  <strong>{{ buildProfile.name }}</strong>
+                  <span>这局现在先学什么</span>
+                  <strong>{{ buildProfile.route_stage ?? "先把当前局面稳住" }}</strong>
                 </div>
                 <div class="summary-item">
-                  <span>当前阶段</span>
-                  <strong>{{ buildProfile.route_stage ?? "过渡判断中" }}</strong>
-                </div>
-                <div class="summary-item">
-                  <span>两场内目标</span>
+                  <span>接下来两场重点找什么</span>
                   <strong>{{ buildProfile.two_fight_goal?.length ? buildProfile.two_fight_goal.join(" / ") : "优先补当前短板" }}</strong>
                 </div>
                 <div class="summary-item">
-                  <span>当前别碰</span>
+                  <span>现在先别拿什么</span>
                   <strong>{{ buildProfile.avoid_now?.length ? buildProfile.avoid_now.join(" / ") : "少拿无关散件" }}</strong>
+                </div>
+                <div class="summary-item">
+                  <span>什么时候再换路线</span>
+                  <strong>{{ buildProfile.pivot_triggers?.length ? buildProfile.pivot_triggers.join(" / ") : "摸到明显核心再锁线" }}</strong>
                 </div>
               </div>
               <section class="build-section">
@@ -1586,30 +1684,30 @@ onBeforeUnmount(stopPolling);
                   <strong>{{ buildProfile.support_cards.length ? buildProfile.support_cards.join(" / ") : "待补充" }}</strong>
                 </div>
                 <div class="summary-item">
-                  <span>下一步补强</span>
+                  <span>接下来继续补什么</span>
                   <strong>{{ buildProfile.next_picks.length ? buildProfile.next_picks.join(" / ") : "优先补当前短板" }}</strong>
                 </div>
                 <div class="summary-item">
-                  <span>转向触发</span>
-                  <strong>{{ buildProfile.pivot_triggers?.length ? buildProfile.pivot_triggers.join(" / ") : "摸到明显核心再锁线" }}</strong>
+                  <span>和你现在这套牌合不合</span>
+                  <strong>{{ recommendationFitLabel }}</strong>
                 </div>
               </div>
               <div class="build-columns">
                 <section class="build-section">
-                  <h4>优势</h4>
+                  <h4>这套构筑为什么强</h4>
                   <ul class="reason-list">
                     <li v-for="item in buildProfile.strengths" :key="`strength-${item}`">{{ item }}</li>
                   </ul>
                 </section>
                 <section class="build-section">
-                  <h4>风险</h4>
+                  <h4>这套构筑现在最怕什么</h4>
                   <ul class="reason-list">
                     <li v-for="item in buildProfile.risks" :key="`risk-${item}`">{{ item }}</li>
                   </ul>
                 </section>
               </div>
               <section v-if="buildProfile.missing_pieces.length" class="build-section">
-                <h4>当前缺件</h4>
+                <h4>当前还缺什么</h4>
                 <div class="tag-row">
                   <span v-for="item in buildProfile.missing_pieces" :key="`missing-${item}`" class="tag">{{ item }}</span>
                 </div>
@@ -2127,6 +2225,11 @@ h1 {
   border: 1px solid rgba(112, 75, 31, 0.12);
 }
 
+.inline-guide-panel {
+  margin-top: 14px;
+  margin-bottom: 0;
+}
+
 .player-mode-header {
   display: flex;
   align-items: flex-start;
@@ -2149,6 +2252,51 @@ h1 {
   margin: 0;
   padding-left: 20px;
   color: #5e4321;
+}
+
+.coach-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(210px, 1fr));
+  gap: 10px;
+}
+
+.coach-note-card {
+  border-radius: 16px;
+  padding: 12px 14px;
+  background: rgba(250, 245, 235, 0.92);
+  border: 1px solid rgba(112, 75, 31, 0.12);
+}
+
+.coach-note-card span {
+  display: block;
+  color: #7a5934;
+  font-size: 0.84rem;
+  margin-bottom: 6px;
+}
+
+.coach-note-card strong {
+  color: #2f1905;
+  line-height: 1.6;
+}
+
+.template-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-bottom: 12px;
+}
+
+.template-chip {
+  border: 1px solid rgba(112, 75, 31, 0.14);
+  background: rgba(250, 245, 235, 0.92);
+  color: #5f3a16;
+  border-radius: 999px;
+  padding: 8px 12px;
+  cursor: pointer;
+}
+
+.template-chip:hover {
+  transform: translateY(-1px);
 }
 
 .onboarding-panel {
