@@ -5,6 +5,7 @@ import logging
 import socket
 
 from .base import BaseTransport
+from .encoding import decode_transport_bytes
 
 
 class SocketJsonTransport(BaseTransport):
@@ -23,6 +24,7 @@ class SocketJsonTransport(BaseTransport):
         self.logger = logger or logging.getLogger(__name__)
         self.server_socket: socket.socket | None = None
         self.client_socket: socket.socket | None = None
+        self._reported_fallback_encoding = False
 
     def start(self) -> None:
         server_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
@@ -38,17 +40,26 @@ class SocketJsonTransport(BaseTransport):
         if self.client_socket is None:
             raise RuntimeError("Socket transport not started.")
 
-        buffer = ""
+        buffer = b""
         while True:
             chunk = self.client_socket.recv(self.buffer_size)
             if not chunk:
                 self.logger.warning("Socket peer disconnected.")
                 return
 
-            buffer += chunk.decode("utf-8", errors="replace")
-            while "\n" in buffer:
-                raw_line, buffer = buffer.split("\n", 1)
-                message = raw_line.strip()
+            buffer += chunk
+            while b"\n" in buffer:
+                raw_line, buffer = buffer.split(b"\n", 1)
+                line, encoding = decode_transport_bytes(raw_line)
+                if encoding not in {"utf-8", "utf-8-sig"} and not self._reported_fallback_encoding:
+                    self.logger.warning(
+                        "Socket payload was decoded with %s fallback. "
+                        "This usually means the upstream process is not sending UTF-8.",
+                        encoding,
+                    )
+                    self._reported_fallback_encoding = True
+
+                message = line.strip()
                 if message:
                     yield message
 

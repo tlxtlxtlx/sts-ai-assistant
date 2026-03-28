@@ -101,6 +101,9 @@ class AssistantSession:
 
 
 class LLMClient(Protocol):
+    def is_configured(self) -> bool:
+        """Return whether an external model is configured."""
+
     def recommend(self, snapshot: GameSnapshot) -> RecommendationResult:
         """Return a structured recommendation for the current screen."""
 

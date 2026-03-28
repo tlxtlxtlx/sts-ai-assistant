@@ -120,11 +120,28 @@ class ShopScreenState:
 
 
 @dataclass(slots=True)
+class RelicRewardState:
+    relics: list[RelicSnapshot] = field(default_factory=list)
+    source: str | None = None
+    sapphire_key_available: bool = False
+    linked_relic: RelicSnapshot | None = None
+
+    def to_dict(self) -> dict[str, Any]:
+        return {
+            "relics": [relic.to_dict() for relic in self.relics],
+            "source": self.source,
+            "sapphire_key_available": self.sapphire_key_available,
+            "linked_relic": self.linked_relic.to_dict() if self.linked_relic else None,
+        }
+
+
+@dataclass(slots=True)
 class RecommendationContext:
     screen_type: str
     screen_state: dict[str, Any] = field(default_factory=dict)
     card_reward: CardRewardState | None = None
     shop: ShopScreenState | None = None
+    relic_reward: RelicRewardState | None = None
 
     def normalized_state(self) -> dict[str, Any]:
         normalized: dict[str, Any] = {"screen_type": self.screen_type}
@@ -132,6 +149,17 @@ class RecommendationContext:
             normalized["card_reward"] = self.card_reward.to_dict()
         if self.shop is not None:
             normalized["shop"] = self.shop.to_dict()
+        if self.relic_reward is not None:
+            normalized["relic_reward"] = self.relic_reward.to_dict()
+        hand = self.screen_state.get("hand")
+        monsters = self.screen_state.get("monsters")
+        energy = self.screen_state.get("energy")
+        if hand is not None or monsters is not None or energy is not None:
+            normalized["combat"] = {
+                "hand": hand if isinstance(hand, list) else [],
+                "monsters": monsters if isinstance(monsters, list) else [],
+                "energy": energy,
+            }
         return normalized
 
     def to_dict(self) -> dict[str, Any]:

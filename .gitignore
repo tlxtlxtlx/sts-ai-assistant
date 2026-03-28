@@ -15,3 +15,4 @@ mod/local.properties
 vendor/slay-the-spire/*.jar
 .env
 config/app_config.local.json
+data/community_cache/

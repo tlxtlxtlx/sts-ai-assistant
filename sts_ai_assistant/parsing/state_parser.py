@@ -10,9 +10,11 @@ from .models import (
     GameSnapshot,
     PotionSnapshot,
     RecommendationContext,
+    RelicRewardState,
     RelicSnapshot,
     ShopScreenState,
 )
+from .display_names import resolve_card_name, resolve_potion_name, resolve_relic_name
 
 
 class StateParserError(ValueError):
@@ -29,19 +31,21 @@ class StateParser:
             raise StateParserError(f"Communication Mod error: {payload['error']}")
 
         game_state = self._unwrap_game_state(payload)
-        screen_type = self._as_str(game_state.get("screen_type"), default="UNKNOWN").upper()
-        screen_state = self._as_dict(game_state.get("screen_state"))
+        available_commands = self._extract_commands(payload)
+        screen_state = self._build_screen_state(game_state)
+        screen_type = self._detect_screen_type(game_state, screen_state, available_commands)
         context = RecommendationContext(
             screen_type=screen_type,
             screen_state=screen_state,
             card_reward=self.extract_card_reward(screen_type, screen_state),
             shop=self.extract_shop(screen_type, screen_state),
+            relic_reward=self.extract_relic_reward(screen_type, screen_state),
         )
 
         return GameSnapshot(
             in_game=bool(payload.get("in_game", False)),
             ready_for_command=bool(payload.get("ready_for_command", False)),
-            available_commands=self._extract_commands(payload),
+            available_commands=available_commands,
             character_class=self._as_optional_str(game_state.get("class")),
             ascension_level=self._as_optional_int(game_state.get("ascension_level")),
             floor=self._as_optional_int(game_state.get("floor")),
@@ -121,11 +125,121 @@ class StateParser:
             purge_cost=self._as_optional_int(screen_state.get("purge_cost")),
         )
 
+    def extract_relic_reward(
+        self,
+        screen_type: str,
+        screen_state: Mapping[str, Any],
+    ) -> RelicRewardState | None:
+        if screen_type not in {"BOSS_REWARD", "COMBAT_REWARD", "TREASURE", "CHEST"}:
+            return None
+
+        direct_relics = [
+            self._parse_relic(relic, choice_index=index)
+            for index, relic in enumerate(screen_state.get("relics", []))
+            if isinstance(relic, Mapping)
+        ]
+        if direct_relics:
+            return RelicRewardState(
+                relics=direct_relics,
+                source=screen_type,
+            )
+
+        rewards = screen_state.get("rewards")
+        if not isinstance(rewards, list):
+            return None
+
+        relics: list[RelicSnapshot] = []
+        linked_relic: RelicSnapshot | None = None
+        sapphire_key_available = False
+        for reward in rewards:
+            if not isinstance(reward, Mapping):
+                continue
+            reward_type = self._as_str(reward.get("reward_type"), default="").upper()
+            if reward_type == "RELIC":
+                relic_payload = self._extract_relic_payload(reward)
+                if relic_payload is not None:
+                    relics.append(self._parse_relic(relic_payload, choice_index=len(relics)))
+            elif reward_type == "SAPPHIRE_KEY":
+                sapphire_key_available = True
+                relic_payload = self._extract_relic_payload(reward)
+                if relic_payload is not None:
+                    linked_relic = self._parse_relic(relic_payload)
+
+        if not relics and linked_relic is None and not sapphire_key_available:
+            return None
+
+        return RelicRewardState(
+            relics=relics,
+            source=screen_type,
+            sapphire_key_available=sapphire_key_available,
+            linked_relic=linked_relic,
+        )
+
     def _unwrap_game_state(self, payload: Mapping[str, Any]) -> Mapping[str, Any]:
         raw_game_state = payload.get("game_state")
         if isinstance(raw_game_state, Mapping):
             return raw_game_state
         return payload
+
+    def _build_screen_state(self, game_state: Mapping[str, Any]) -> dict[str, Any]:
+        screen_state = self._as_dict(game_state.get("screen_state"))
+        combat_state = self._extract_combat_state(game_state)
+        if not combat_state:
+            return screen_state
+        merged = dict(screen_state)
+        merged.update(combat_state)
+        return merged
+
+    def _extract_combat_state(self, game_state: Mapping[str, Any]) -> dict[str, Any]:
+        combat_state: dict[str, Any] = {}
+
+        hand = self._find_first_list_by_keys(
+            game_state,
+            {"hand", "hand_cards", "cards_in_hand"},
+        )
+        if hand is not None:
+            combat_state["hand"] = hand
+
+        monsters = self._find_first_list_by_keys(
+            game_state,
+            {"monsters", "enemies"},
+        )
+        if monsters is not None:
+            combat_state["monsters"] = monsters
+
+        energy = self._find_first_scalar_by_keys(
+            game_state,
+            {"energy", "current_energy", "energy_count", "player_energy", "energy_remaining"},
+        )
+        if energy is not None:
+            combat_state["energy"] = energy
+
+        return combat_state
+
+    def _detect_screen_type(
+        self,
+        game_state: Mapping[str, Any],
+        screen_state: Mapping[str, Any],
+        available_commands: list[str],
+    ) -> str:
+        raw_screen_type = self._as_str(game_state.get("screen_type"), default="UNKNOWN").upper()
+        if raw_screen_type not in {"", "UNKNOWN", "NONE"}:
+            return raw_screen_type
+
+        if self._looks_like_combat(screen_state):
+            return "COMBAT"
+
+        command_set = {command.upper() for command in available_commands}
+        if {"PLAY", "END"} & command_set:
+            return "COMBAT"
+
+        return raw_screen_type
+
+    def _looks_like_combat(self, payload: Mapping[str, Any]) -> bool:
+        return any(
+            key in payload
+            for key in ("hand", "hand_cards", "cards_in_hand", "monsters", "enemies")
+        )
 
     def _extract_commands(self, payload: Mapping[str, Any]) -> list[str]:
         commands = payload.get("available_commands")
@@ -138,12 +252,11 @@ class StateParser:
         payload: Mapping[str, Any],
         choice_index: int | None = None,
     ) -> CardSnapshot:
-        name = self._as_str(
-            payload.get("name"),
-            default=self._as_str(payload.get("id"), default="UNKNOWN_CARD"),
-        )
+        card_id = self._as_str(payload.get("id"), default="UNKNOWN_CARD")
+        raw_name = self._as_optional_str(payload.get("name"))
+        name = resolve_card_name(card_id, raw_name)
         return CardSnapshot(
-            id=self._as_str(payload.get("id"), default=name),
+            id=card_id,
             name=name,
             upgrades=self._as_optional_int(payload.get("upgrades")) or 0,
             cost=self._as_optional_int(payload.get("cost")),
@@ -164,12 +277,11 @@ class StateParser:
         payload: Mapping[str, Any],
         choice_index: int | None = None,
     ) -> RelicSnapshot:
-        name = self._as_str(
-            payload.get("name"),
-            default=self._as_str(payload.get("id"), default="UNKNOWN_RELIC"),
-        )
+        relic_id = self._as_str(payload.get("id"), default="UNKNOWN_RELIC")
+        raw_name = self._as_optional_str(payload.get("name"))
+        name = resolve_relic_name(relic_id, raw_name)
         return RelicSnapshot(
-            id=self._as_str(payload.get("id"), default=name),
+            id=relic_id,
             name=name,
             counter=self._as_optional_int(payload.get("counter")),
             price=self._as_optional_int(payload.get("price")),
@@ -181,12 +293,11 @@ class StateParser:
         payload: Mapping[str, Any],
         choice_index: int | None = None,
     ) -> PotionSnapshot:
-        name = self._as_str(
-            payload.get("name"),
-            default=self._as_str(payload.get("id"), default="UNKNOWN_POTION"),
-        )
+        potion_id = self._as_str(payload.get("id"), default="UNKNOWN_POTION")
+        raw_name = self._as_optional_str(payload.get("name"))
+        name = resolve_potion_name(potion_id, raw_name)
         return PotionSnapshot(
-            id=self._as_str(payload.get("id"), default=name),
+            id=potion_id,
             name=name,
             can_use=self._as_optional_bool(payload.get("can_use")),
             can_discard=self._as_optional_bool(payload.get("can_discard")),
@@ -194,6 +305,15 @@ class StateParser:
             price=self._as_optional_int(payload.get("price")),
             choice_index=self._as_optional_int(payload.get("choice_index")) or choice_index,
         )
+
+    def _extract_relic_payload(self, payload: Mapping[str, Any]) -> Mapping[str, Any] | None:
+        for key in ("relic", "linked_relic", "link"):
+            value = payload.get(key)
+            if isinstance(value, Mapping):
+                return value
+        if "id" in payload and ("name" in payload or "counter" in payload):
+            return payload
+        return None
 
     def _find_first_list_value(
         self,
@@ -209,6 +329,50 @@ class StateParser:
                 return value
             if isinstance(value, Mapping):
                 found = self._find_first_list_value(value, target_key, max_depth=max_depth - 1)
+                if found is not None:
+                    return found
+        return None
+
+    def _find_first_list_by_keys(
+        self,
+        payload: Any,
+        target_keys: set[str],
+        max_depth: int = 6,
+    ) -> list[Any] | None:
+        if max_depth < 0:
+            return None
+        if isinstance(payload, Mapping):
+            for key, value in payload.items():
+                if str(key).casefold() in target_keys and isinstance(value, list):
+                    return list(value)
+                found = self._find_first_list_by_keys(value, target_keys, max_depth=max_depth - 1)
+                if found is not None:
+                    return found
+        elif isinstance(payload, list):
+            for item in payload:
+                found = self._find_first_list_by_keys(item, target_keys, max_depth=max_depth - 1)
+                if found is not None:
+                    return found
+        return None
+
+    def _find_first_scalar_by_keys(
+        self,
+        payload: Any,
+        target_keys: set[str],
+        max_depth: int = 6,
+    ) -> Any | None:
+        if max_depth < 0:
+            return None
+        if isinstance(payload, Mapping):
+            for key, value in payload.items():
+                if str(key).casefold() in target_keys and not isinstance(value, (Mapping, list)):
+                    return value
+                found = self._find_first_scalar_by_keys(value, target_keys, max_depth=max_depth - 1)
+                if found is not None:
+                    return found
+        elif isinstance(payload, list):
+            for item in payload:
+                found = self._find_first_scalar_by_keys(item, target_keys, max_depth=max_depth - 1)
                 if found is not None:
                     return found
         return None

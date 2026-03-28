@@ -1,0 +1,728 @@
+{
+  "generated_at": "2026-03-28T04:59:33.096970+00:00",
+  "sources": [
+    {
+      "source_id": "bilibili_ai_assistant_demo",
+      "title": "杀戮尖塔最强AI辅助第一幕通关视频",
+      "url": "https://www.bilibili.com/video/BV1k36UB6E35",
+      "publisher": "Bilibili",
+      "published_at": "unknown",
+      "summary": "THE_SILENT向资料。更强调先稳住血线和回合质量，再顺势转毒、弃牌或刀流。 资料里多次提到过牌和运转质量对稳定通关很关键。 当前在线抓取失败，先使用本地整理的社区摘要。",
+      "fetched_at": "2026-03-27T16:31:01.264762+00:00",
+      "character_classes": [
+        "THE_SILENT"
+      ],
+      "tags": [
+        "video",
+        "ai_assistant",
+        "silent",
+        "beginner"
+      ],
+      "excerpt": "这条中文视频示例强调，The Silent 在第一幕不要急着硬锁路线。更推荐先拿 Dodge and Roll、Acrobatics 这类能减少掉血和改善回合质量的牌，再看后面转 poison、shiv 或 discard。Quick Slash 更像前期顺手补丁，不是必须围绕它构筑。",
+      "raw_status": "fallback"
+    },
+    {
+      "source_id": "steam_silent_style",
+      "title": "Steam Silent Guide",
+      "url": "https://steamcommunity.com/sharedfiles/filedetails/?id=1331551053",
+      "publisher": "Steam Community",
+      "published_at": "unknown",
+      "summary": "THE_SILENT向资料。更强调先稳住血线和回合质量，再顺势转毒、弃牌或刀流。 资料里多次提到过牌和运转质量对稳定通关很关键。 当前在线抓取失败，先使用本地整理的社区摘要。",
+      "fetched_at": "2026-03-27T16:31:01.978229+00:00",
+      "character_classes": [
+        "THE_SILENT"
+      ],
+      "tags": [
+        "guide",
+        "builds",
+        "cards"
+      ],
+      "excerpt": "这份静默向指南更强调开局先稳住血线。Dodge and Roll、Acrobatics、Backflip、Leg Sweep 这类牌通常比笨重输出更值得早拿。到了中期再按 poison、shiv、discard 的组件决定路线，会比第一层就死锁流派更稳。",
+      "raw_status": "fallback"
+    },
+    {
+      "source_id": "reddit_learning_silent",
+      "title": "Learning The Silent discussion",
+      "url": "https://www.reddit.com/r/slaythespire/comments/1rzhfrx/learning_the_silent/",
+      "publisher": "Reddit r/slaythespire",
+      "published_at": "unknown",
+      "summary": "THE_SILENT向资料。更强调先稳住血线和回合质量，再顺势转毒、弃牌或刀流。 资料里多次提到过牌和运转质量对稳定通关很关键。 当前在线抓取失败，先使用本地整理的社区摘要。",
+      "fetched_at": "2026-03-27T16:31:21.993048+00:00",
+      "character_classes": [
+        "THE_SILENT"
+      ],
+      "tags": [
+        "discussion",
+        "beginner",
+        "cards"
+      ],
+      "excerpt": "这类新手讨论里常见的共识是，The Silent 在前几层最怕白掉血和卡手。Dodge and Roll、Acrobatics、Backflip 往往都比贪高费攻击更稳。很多玩家会建议先把回合质量做顺，再决定走 poison、discard 或 shiv。",
+      "raw_status": "fallback"
+    },
+    {
+      "source_id": "reddit_mastering_silent",
+      "title": "Mastering The Silent discussion",
+      "url": "https://www.reddit.com/r/slaythespire/comments/1i6539x/",
+      "publisher": "Reddit r/slaythespire",
+      "published_at": "unknown",
+      "summary": "THE_SILENT向资料。更强调先稳住血线和回合质量，再顺势转毒、弃牌或刀流。 资料里多次提到过牌和运转质量对稳定通关很关键。 当前在线抓取失败，先使用本地整理的社区摘要。",
+      "fetched_at": "2026-03-27T16:31:22.064433+00:00",
+      "character_classes": [
+        "THE_SILENT"
+      ],
+      "tags": [
+        "discussion",
+        "advanced",
+        "builds"
+      ],
+      "excerpt": "进阶玩家常提到，静默真正强的是回合质量，而不是第一时间凑齐某个流派。Acrobatics、Well Laid Plans、Footwork 这类牌能让 poison、shiv、discard 都更顺。Quick Slash 只是过渡牌，真正成型仍然要靠核心组件。",
+      "raw_status": "fallback"
+    },
+    {
+      "source_id": "reddit_silent_archetypes",
+      "title": "Silent archetypes search",
+      "url": "https://www.reddit.com/r/slaythespire/search/?q=silent%20poison%20shiv%20discard&restrict_sr=1",
+      "publisher": "Reddit r/slaythespire",
+      "published_at": "unknown",
+      "summary": "THE_SILENT向资料。更强调先稳住血线和回合质量，再顺势转毒、弃牌或刀流。 资料里多次提到过牌和运转质量对稳定通关很关键。 当前在线抓取失败，先使用本地整理的社区摘要。",
+      "fetched_at": "2026-03-27T16:31:22.118500+00:00",
+      "character_classes": [
+        "THE_SILENT"
+      ],
+      "tags": [
+        "search",
+        "builds",
+        "poison",
+        "shiv",
+        "discard"
+      ],
+      "excerpt": "这组讨论主要围绕 poison、shiv、discard 三条静默主路线。poison 常配 Acrobatics、Backflip、Catalyst；shiv 常配 Blade Dance、Accuracy、After Image；discard 常配 Calculated Gamble、Prepared、Tactician、Reflex。很多帖子都会先强调防守底盘，比如 Dodge and Roll、Leg Sweep、Footwork。",
+      "raw_status": "fallback"
+    },
+    {
+      "source_id": "reddit_defect_basics",
+      "title": "Defect tips for beginners",
+      "url": "https://www.reddit.com/r/slaythespire/comments/16l2g4x/defect_tips_for_beginners/",
+      "publisher": "Reddit r/slaythespire",
+      "published_at": "unknown",
+      "summary": "DEFECT向资料。更看重球体效率、防守过渡和聚焦成长的平衡。 当前在线抓取失败，先使用本地整理的社区摘要。",
+      "fetched_at": "2026-03-27T16:31:22.370035+00:00",
+      "character_classes": [
+        "DEFECT"
+      ],
+      "tags": [
+        "discussion",
+        "beginner",
+        "orbs"
+      ],
+      "excerpt": "机器人新手讨论里最常见的建议是先让球体和防守顺起来。Coolheaded、Cold Snap、Charge Battery、Glacier 都很受欢迎。Beam Cell 是顺手的零费节奏牌，Genetic Algorithm 是前期能养的成长防御，Stack 则更看牌组厚度和具体结构。",
+      "raw_status": "fallback"
+    },
+    {
+      "source_id": "reddit_defect_archetypes",
+      "title": "Defect archetypes search",
+      "url": "https://www.reddit.com/r/slaythespire/search/?q=defect%20frost%20focus%20dark%20orbs&restrict_sr=1",
+      "publisher": "Reddit r/slaythespire",
+      "published_at": "unknown",
+      "summary": "DEFECT向资料。更看重球体效率、防守过渡和聚焦成长的平衡。 当前在线抓取失败，先使用本地整理的社区摘要。",
+      "fetched_at": "2026-03-27T16:31:22.420629+00:00",
+      "character_classes": [
+        "DEFECT"
+      ],
+      "tags": [
+        "search",
+        "builds",
+        "frost",
+        "focus",
+        "dark_orb"
+      ],
+      "excerpt": "机器人常见路线包括 frost focus、dark orbs、orb tempo 和 zero-cost recursion。frost focus 常提到 Coolheaded、Glacier、Defragment、Loop；dark orb 常提到 Darkness、Recursion、Dualcast；零费循环会提到 Beam Cell、FTL、Steam Barrier、All For One。",
+      "raw_status": "fallback"
+    },
+    {
+      "source_id": "reddit_ironclad_archetypes",
+      "title": "Ironclad archetypes search",
+      "url": "https://www.reddit.com/r/slaythespire/search/?q=ironclad%20strength%20exhaust%20barricade&restrict_sr=1",
+      "publisher": "Reddit r/slaythespire",
+      "published_at": "unknown",
+      "summary": "IRONCLAD向资料。通常建议先补第一幕战力，再决定力量、废牌还是壁垒格挡。 当前在线抓取失败，先使用本地整理的社区摘要。",
+      "fetched_at": "2026-03-27T16:31:22.485206+00:00",
+      "character_classes": [
+        "IRONCLAD"
+      ],
+      "tags": [
+        "search",
+        "builds",
+        "strength",
+        "exhaust",
+        "barricade"
+      ],
+      "excerpt": "铁甲讨论里最常见的路线是 strength、exhaust 和 barricade。Pommel Strike、Shrug It Off 常被当成前期高质量过渡牌；Inflame 是力量成长支点；Feel No Pain、True Grit、Burning Pact、Corruption 是 exhaust 常见组件；Barricade、Entrench、Body Slam 则对应厚重格挡路线。",
+      "raw_status": "fallback"
+    },
+    {
+      "source_id": "reddit_watcher_basics",
+      "title": "Watcher tips for new players",
+      "url": "https://www.reddit.com/r/slaythespire/comments/16z0o66/watcher_tips_for_new_players/",
+      "publisher": "Reddit r/slaythespire",
+      "published_at": "unknown",
+      "summary": "WATCHER向资料。更强调姿态切换的安全性，以及爆发与退怒之间的平衡。 当前在线抓取失败，先使用本地整理的社区摘要。",
+      "fetched_at": "2026-03-27T16:31:22.563818+00:00",
+      "character_classes": [
+        "WATCHER"
+      ],
+      "tags": [
+        "discussion",
+        "beginner",
+        "stances"
+      ],
+      "excerpt": "观者新手讨论常强调，先学会安全地切 stance 再追求爆发。Eruption、Vigilance、Inner Peace、Fear No Evil 是很关键的基本功牌。Rushdown 很强，但要配合稳定退怒；Pressure Points 则属于偏门路线，通常不建议没组件就硬转。",
+      "raw_status": "fallback"
+    },
+    {
+      "source_id": "reddit_watcher_archetypes",
+      "title": "Watcher archetypes search",
+      "url": "https://www.reddit.com/r/slaythespire/search/?q=watcher%20stance%20scry%20pressure%20points&restrict_sr=1",
+      "publisher": "Reddit r/slaythespire",
+      "published_at": "unknown",
+      "summary": "WATCHER向资料。更强调姿态切换的安全性，以及爆发与退怒之间的平衡。 当前在线抓取失败，先使用本地整理的社区摘要。",
+      "fetched_at": "2026-03-27T16:31:22.866758+00:00",
+      "character_classes": [
+        "WATCHER"
+      ],
+      "tags": [
+        "search",
+        "builds",
+        "stance",
+        "scry",
+        "pressure_points"
+      ],
+      "excerpt": "观者常见路线包括 stance burst、Rushdown combo、scry control 和 Pressure Points。姿态路线常提到 Tantrum、Rushdown、Inner Peace、Fear No Evil；占卜路线常提到 Third Eye、Cut Through Fate、Just Lucky、Weave；Pressure Points 属于偏门高辨识度构筑。",
+      "raw_status": "fallback"
+    },
+    {
+      "source_id": "silent_corpse_poison_route",
+      "title": "?????????",
+      "url": "https://community.local/silent/corpse-poison",
+      "publisher": "Curated Community Notes",
+      "published_at": "2026-03",
+      "summary": "???????????????????????????????????????????",
+      "fetched_at": "2026-03-28T04:59:33.072478+00:00",
+      "character_classes": [
+        "THE_SILENT"
+      ],
+      "tags": [
+        "curated",
+        "builds",
+        "poison",
+        "corpse_explosion",
+        "tier_s"
+      ],
+      "excerpt": "???????? Corpse Explosion?Catalyst?Noxious Fumes?Crippling Cloud ????????????????????????????? Acrobatics?Backflip?Leg Sweep?Well Laid Plans ????????????????????????????????????? S ????",
+      "raw_status": "fallback"
+    },
+    {
+      "source_id": "silent_pure_shiv_route",
+      "title": "??????????",
+      "url": "https://community.local/silent/pure-shiv",
+      "publisher": "Curated Community Notes",
+      "published_at": "2026-03",
+      "summary": "??????????????????????????????????????",
+      "fetched_at": "2026-03-28T04:59:33.074478+00:00",
+      "character_classes": [
+        "THE_SILENT"
+      ],
+      "tags": [
+        "curated",
+        "builds",
+        "shiv",
+        "tempo",
+        "tier_a"
+      ],
+      "excerpt": "??????? Blade Dance?Cloak And Dagger?Accuracy?After Image?Finisher???????????? A ?????????????????????????????? Accuracy?After Image ? Terror?????????????????????????????????????????",
+      "raw_status": "fallback"
+    },
+    {
+      "source_id": "silent_discard_burst_route",
+      "title": "??????????",
+      "url": "https://community.local/silent/discard-burst",
+      "publisher": "Curated Community Notes",
+      "published_at": "2026-03",
+      "summary": "???????????????????????????????????????",
+      "fetched_at": "2026-03-28T04:59:33.075475+00:00",
+      "character_classes": [
+        "THE_SILENT"
+      ],
+      "tags": [
+        "curated",
+        "builds",
+        "discard",
+        "burst",
+        "tier_a"
+      ],
+      "excerpt": "?????? Calculated Gamble?Prepared?Tactician?Reflex?Eviscerate?Sneaky Strike??????? A ?????????????????????????????????????????????? Acrobatics?Calculated Gamble ?????????????????????",
+      "raw_status": "fallback"
+    },
+    {
+      "source_id": "defect_frost_focus_route",
+      "title": "??????????",
+      "url": "https://community.local/defect/frost-focus",
+      "publisher": "Curated Community Notes",
+      "published_at": "2026-03",
+      "summary": "DEFECT向资料。更看重球体效率、防守过渡和聚焦成长的平衡。",
+      "fetched_at": "2026-03-28T04:59:33.077467+00:00",
+      "character_classes": [
+        "DEFECT"
+      ],
+      "tags": [
+        "curated",
+        "builds",
+        "frost",
+        "focus",
+        "tier_s"
+      ],
+      "excerpt": "?????? Coolheaded?Glacier?Defragment?Loop?Capacitor?Biased Cognition????????????? S ????????????????????????????? Coolheaded?Cold Snap?Charge Battery ????????????????????? frost focus?",
+      "raw_status": "fallback"
+    },
+    {
+      "source_id": "defect_power_focus_route",
+      "title": "??????????",
+      "url": "https://community.local/defect/power-focus",
+      "publisher": "Curated Community Notes",
+      "published_at": "2026-03",
+      "summary": "??????????? A ??????????????????????????????",
+      "fetched_at": "2026-03-28T04:59:33.078463+00:00",
+      "character_classes": [
+        "DEFECT"
+      ],
+      "tags": [
+        "curated",
+        "builds",
+        "power",
+        "focus",
+        "tier_a"
+      ],
+      "excerpt": "??????? Defragment?Biased Cognition?Echo Form?Buffer?Loop?Capacitor????????????????????????????????????????????????????????????????????????????",
+      "raw_status": "fallback"
+    },
+    {
+      "source_id": "defect_dark_orb_route",
+      "title": "??????????",
+      "url": "https://community.local/defect/dark-orb",
+      "publisher": "Curated Community Notes",
+      "published_at": "2026-03",
+      "summary": "??????????? A ????????????????????????????????????",
+      "fetched_at": "2026-03-28T04:59:33.080457+00:00",
+      "character_classes": [
+        "DEFECT"
+      ],
+      "tags": [
+        "curated",
+        "builds",
+        "dark_orb",
+        "burst",
+        "tier_a"
+      ],
+      "excerpt": "?????? Darkness?Dualcast?Recursion?Loop?Compile Driver ????????????????????????????????????????????????????????????????????????????????????",
+      "raw_status": "fallback"
+    },
+    {
+      "source_id": "defect_zero_cost_claw_route",
+      "title": "???????????",
+      "url": "https://community.local/defect/zero-cost-claw",
+      "publisher": "Curated Community Notes",
+      "published_at": "2026-03",
+      "summary": "??????????????????????????? A ?????????????",
+      "fetched_at": "2026-03-28T04:59:33.081468+00:00",
+      "character_classes": [
+        "DEFECT"
+      ],
+      "tags": [
+        "curated",
+        "builds",
+        "zero_cost",
+        "claw",
+        "tier_a"
+      ],
+      "excerpt": "?????? Claw?All For One?Beam Cell?FTL?Steam Barrier?Go for the Eyes ??????????????????????? Claw??????????????????????????????????????????????????",
+      "raw_status": "fallback"
+    },
+    {
+      "source_id": "ironclad_corruption_exhaust_route",
+      "title": "??????????",
+      "url": "https://community.local/ironclad/corruption-exhaust",
+      "publisher": "Curated Community Notes",
+      "published_at": "2026-03",
+      "summary": "???????????????????????????????????????????",
+      "fetched_at": "2026-03-28T04:59:33.082503+00:00",
+      "character_classes": [
+        "IRONCLAD"
+      ],
+      "tags": [
+        "curated",
+        "builds",
+        "corruption",
+        "exhaust",
+        "tier_s"
+      ],
+      "excerpt": "?????? Corruption?Feel No Pain?Dark Embrace?Burning Pact?True Grit ??????????????? S ????????????????????????????????????? Pommel Strike?Shrug It Off???????????????????????????",
+      "raw_status": "fallback"
+    },
+    {
+      "source_id": "ironclad_body_slam_block_route",
+      "title": "?? Body Slam ??????",
+      "url": "https://community.local/ironclad/body-slam-block",
+      "publisher": "Curated Community Notes",
+      "published_at": "2026-03",
+      "summary": "??????? Body Slam ?? A ??????????????????????????????",
+      "fetched_at": "2026-03-28T04:59:33.084496+00:00",
+      "character_classes": [
+        "IRONCLAD"
+      ],
+      "tags": [
+        "curated",
+        "builds",
+        "body_slam",
+        "block",
+        "tier_a"
+      ],
+      "excerpt": "?????? Body Slam?Barricade?Entrench?Impervious?Shrug It Off ????????????????????????????????? Body Slam ??????????????????????????? Barricade ? Entrench ??????????",
+      "raw_status": "fallback"
+    },
+    {
+      "source_id": "ironclad_strength_burst_route",
+      "title": "??????????",
+      "url": "https://community.local/ironclad/strength-burst",
+      "publisher": "Curated Community Notes",
+      "published_at": "2026-03",
+      "summary": "??????????? A ??????????????????????????????????",
+      "fetched_at": "2026-03-28T04:59:33.087486+00:00",
+      "character_classes": [
+        "IRONCLAD"
+      ],
+      "tags": [
+        "curated",
+        "builds",
+        "strength",
+        "burst",
+        "tier_a"
+      ],
+      "excerpt": "?????? Inflame?Spot Weakness?Limit Break?Heavy Blade?Sword Boomerang?Whirlwind???????????????????????????????????????????????????????????? Limit Break???????????????????",
+      "raw_status": "fallback"
+    },
+    {
+      "source_id": "watcher_rushdown_combo_route",
+      "title": "?? Rushdown ??????",
+      "url": "https://community.local/watcher/rushdown-combo",
+      "publisher": "Curated Community Notes",
+      "published_at": "2026-03",
+      "summary": "WATCHER向资料。更强调姿态切换的安全性，以及爆发与退怒之间的平衡。",
+      "fetched_at": "2026-03-28T04:59:33.089478+00:00",
+      "character_classes": [
+        "WATCHER"
+      ],
+      "tags": [
+        "curated",
+        "builds",
+        "rushdown",
+        "combo",
+        "tier_s"
+      ],
+      "excerpt": "?????? Rushdown?Tantrum?Inner Peace?Fear No Evil?Vigilance ?????????????? S ?????????????????????????????????????????????? combo ?????????",
+      "raw_status": "fallback"
+    },
+    {
+      "source_id": "watcher_scry_control_route",
+      "title": "??????????",
+      "url": "https://community.local/watcher/scry-control",
+      "publisher": "Curated Community Notes",
+      "published_at": "2026-03",
+      "summary": "??????????? A ???????????????????????? Rushdown ???",
+      "fetched_at": "2026-03-28T04:59:33.091986+00:00",
+      "character_classes": [
+        "WATCHER"
+      ],
+      "tags": [
+        "curated",
+        "builds",
+        "scry",
+        "control",
+        "tier_a"
+      ],
+      "excerpt": "?????? Third Eye?Cut Through Fate?Just Lucky?Weave?Nirvana ???????????????????????????????????????????????????????????????????????????????",
+      "raw_status": "fallback"
+    },
+    {
+      "source_id": "watcher_divinity_burst_route",
+      "title": "??????????",
+      "url": "https://community.local/watcher/divinity-burst",
+      "publisher": "Curated Community Notes",
+      "published_at": "2026-03",
+      "summary": "??????????? A ????????????????????????????????",
+      "fetched_at": "2026-03-28T04:59:33.094977+00:00",
+      "character_classes": [
+        "WATCHER"
+      ],
+      "tags": [
+        "curated",
+        "builds",
+        "divinity",
+        "burst",
+        "tier_a"
+      ],
+      "excerpt": "?????? Devotion?Worship?Pray?Blasphemy ???????????????????????????????????????????????????????????????????????????????????????????",
+      "raw_status": "fallback"
+    }
+  ],
+  "general_notes": [
+    {
+      "character_class": "THE_SILENT",
+      "min_floor": 0,
+      "max_floor": 18,
+      "build_direction": "社区共识通常是先稳住血线、补过牌和防御，再按奖励往毒、弃牌或刀流转。",
+      "reason_lines": [
+        "静默第一幕最怕回合发僵和白掉血，所以很多社区建议先补稳牌，再决定主流派。",
+        "只要前期把节奏撑住，静默后续无论转毒、弃牌还是刀流都还有空间。"
+      ],
+      "source_ids": [
+        "bilibili_ai_assistant_demo",
+        "steam_silent_style",
+        "reddit_learning_silent"
+      ],
+      "archetype_hints": [
+        "毒控制",
+        "弃牌运转",
+        "刀流节奏",
+        "敏捷龟甲"
+      ]
+    },
+    {
+      "character_class": "IRONCLAD",
+      "min_floor": 0,
+      "max_floor": 18,
+      "build_direction": "社区共识通常是先补第一幕战力和过牌，再看力量、废牌还是壁垒格挡哪条线更自然。",
+      "reason_lines": [
+        "铁甲前期能不能稳定打过精英，比空谈后期成长更关键。",
+        "很多玩家会先抓高质量攻防牌，把回合质量做起来，再接力量或废牌组件。"
+      ],
+      "source_ids": [
+        "reddit_ironclad_archetypes",
+        "ironclad_corruption_exhaust_route",
+        "ironclad_body_slam_block_route"
+      ],
+      "archetype_hints": [
+        "力量爆发",
+        "废牌引擎",
+        "壁垒叠甲",
+        "伤口联动"
+      ]
+    },
+    {
+      "character_class": "DEFECT",
+      "min_floor": 0,
+      "max_floor": 18,
+      "build_direction": "社区共识通常是先补球体效率和防守手感，再看是走冰球聚焦、黑球爆发还是零费循环。",
+      "reason_lines": [
+        "机器人前期如果球体效率和防守都不顺，很容易还没成型就先掉太多血。",
+        "先拿能改善回合质量的球体牌，通常比一开始硬赌高上限组件更稳。"
+      ],
+      "source_ids": [
+        "reddit_defect_basics",
+        "reddit_defect_archetypes",
+        "defect_frost_focus_route"
+      ],
+      "archetype_hints": [
+        "冰球聚焦",
+        "黑球爆发",
+        "球体节奏",
+        "零费回收"
+      ]
+    },
+    {
+      "character_class": "WATCHER",
+      "min_floor": 0,
+      "max_floor": 18,
+      "build_direction": "社区共识通常是先保证姿态切换安全，再决定是走姿态爆发、占卜控制还是印记特化。",
+      "reason_lines": [
+        "观者最怕的是为了爆发硬进怒却退不出来，所以前期要先把安全性补出来。",
+        "只要退怒和抽牌足够顺，观者后续很容易转成高上限路线。"
+      ],
+      "source_ids": [
+        "reddit_watcher_basics",
+        "reddit_watcher_archetypes",
+        "watcher_rushdown_combo_route"
+      ],
+      "archetype_hints": [
+        "姿态爆发",
+        "Rushdown 连段",
+        "占卜控制",
+        "印记特化"
+      ]
+    }
+  ],
+  "card_notes": [
+    {
+      "character_class": "THE_SILENT",
+      "card_id": "Dodge and Roll",
+      "min_floor": 0,
+      "max_floor": 24,
+      "score_adjustment": 0.42,
+      "build_direction": "社区通常把它当静默前期最稳的防守补件之一，拿了以后更容易往敏捷龟甲或稳健过渡走。",
+      "reason_lines": [
+        "很多玩家会把闪避与翻滚当成静默第一幕很舒服的保血牌。",
+        "它既能顶住前期压力，也不会妨碍后续转毒或弃牌。"
+      ],
+      "source_ids": [
+        "bilibili_ai_assistant_demo",
+        "steam_silent_style",
+        "reddit_learning_silent"
+      ]
+    },
+    {
+      "character_class": "THE_SILENT",
+      "card_id": "Acrobatics",
+      "min_floor": 0,
+      "max_floor": 30,
+      "score_adjustment": 0.36,
+      "build_direction": "社区通常把它视为静默通用过牌骨架，拿了以后更容易往弃牌运转或毒控制走。",
+      "reason_lines": [
+        "杂技在很多静默讨论里都被看作高质量过牌件。",
+        "它会明显提升回合选择质量，也方便后续接弃牌收益牌。"
+      ],
+      "source_ids": [
+        "bilibili_ai_assistant_demo",
+        "steam_silent_style",
+        "reddit_learning_silent"
+      ]
+    },
+    {
+      "character_class": "THE_SILENT",
+      "card_id": "Quick Slash",
+      "min_floor": 0,
+      "max_floor": 18,
+      "score_adjustment": 0.14,
+      "build_direction": "社区更常把它当成前期节奏补丁，而不是必须围绕它构筑。",
+      "reason_lines": [
+        "快斩属于顺手的一费小补强，能补一点输出和过牌。",
+        "它不太定义路线，但在第一幕经常够用。"
+      ],
+      "source_ids": [
+        "bilibili_ai_assistant_demo",
+        "reddit_mastering_silent"
+      ]
+    },
+    {
+      "character_class": "DEFECT",
+      "card_id": "Beam Cell",
+      "min_floor": 0,
+      "max_floor": 18,
+      "score_adjustment": 0.2,
+      "build_direction": "社区通常把它当零费节奏件，适合补前期效率，再看后续转球体还是零费循环。",
+      "reason_lines": [
+        "光束射线在很多讨论里都被视为很顺手的前期零费牌。",
+        "球体体系还没齐时，它能先把易伤和节奏补上。"
+      ],
+      "source_ids": [
+        "reddit_defect_basics",
+        "reddit_defect_archetypes",
+        "defect_zero_cost_claw_route"
+      ]
+    },
+    {
+      "character_class": "DEFECT",
+      "card_id": "Coolheaded",
+      "min_floor": 0,
+      "max_floor": 24,
+      "score_adjustment": 0.34,
+      "build_direction": "社区通常把它视为冰球聚焦和稳健过渡的优质底盘。",
+      "reason_lines": [
+        "冷静头脑兼顾防守、抽牌和球体推进，很多玩家都很愿意早拿。",
+        "它会让机器人更快进入稳定回合。"
+      ],
+      "source_ids": [
+        "reddit_defect_basics",
+        "reddit_defect_archetypes",
+        "defect_frost_focus_route"
+      ]
+    },
+    {
+      "character_class": "DEFECT",
+      "card_id": "Genetic Algorithm",
+      "min_floor": 0,
+      "max_floor": 24,
+      "score_adjustment": 0.24,
+      "build_direction": "社区通常把它当成长型防御投资，前提是当前局面已经能扛住。",
+      "reason_lines": [
+        "遗传算法的上限不低，但更像提前布局未来的牌。",
+        "如果当前血线和战力还行，提早拿会比较赚。"
+      ],
+      "source_ids": [
+        "reddit_defect_basics"
+      ]
+    },
+    {
+      "character_class": "DEFECT",
+      "card_id": "Stack",
+      "min_floor": 0,
+      "max_floor": 22,
+      "score_adjustment": 0.08,
+      "build_direction": "社区更常把它当特定防御结构的补件，而不是无脑抓的万能牌。",
+      "reason_lines": [
+        "堆栈的价值很看牌组厚度和抽牌结构。",
+        "如果还没建立稳定防守和过牌，它不一定比通用好牌更值。"
+      ],
+      "source_ids": [
+        "reddit_defect_basics"
+      ]
+    },
+    {
+      "character_class": "IRONCLAD",
+      "card_id": "PommelStrike",
+      "min_floor": 0,
+      "max_floor": 20,
+      "score_adjustment": 0.24,
+      "build_direction": "社区通常把它视为铁甲第一幕高质量即战力，适合先稳住输出和抽牌节奏。",
+      "reason_lines": [
+        "它是很经典的铁甲前期好牌，输出和过牌都不亏。",
+        "第一幕先把它这类实战牌拿稳，通常比空等后期件更靠谱。"
+      ],
+      "source_ids": [
+        "reddit_ironclad_archetypes",
+        "ironclad_corruption_exhaust_route"
+      ]
+    },
+    {
+      "character_class": "IRONCLAD",
+      "card_id": "ShrugItOff",
+      "min_floor": 0,
+      "max_floor": 22,
+      "score_adjustment": 0.24,
+      "build_direction": "社区通常把它视为铁甲最稳的防御过牌件之一，适合很多路线。",
+      "reason_lines": [
+        "耸肩无视在铁甲讨论里一直是稳健高分牌。",
+        "它既保血又修手，很适合过第一幕。"
+      ],
+      "source_ids": [
+        "reddit_ironclad_archetypes",
+        "ironclad_corruption_exhaust_route",
+        "ironclad_body_slam_block_route"
+      ]
+    },
+    {
+      "character_class": "IRONCLAD",
+      "card_id": "Inflame",
+      "min_floor": 0,
+      "max_floor": 20,
+      "score_adjustment": 0.08,
+      "build_direction": "社区通常把它当力量路线的成长件，但会提醒别为了它放掉前期即时强度。",
+      "reason_lines": [
+        "燃烧之力代表的是后续成长，不是立刻解局面。",
+        "前几层如果还在补战力，它往往没那么优先。"
+      ],
+      "source_ids": [
+        "reddit_ironclad_archetypes",
+        "ironclad_strength_burst_route"
+      ]
+    }
+  ]
+}

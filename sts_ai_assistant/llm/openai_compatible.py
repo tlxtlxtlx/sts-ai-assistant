@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from dataclasses import dataclass
+from dataclasses import dataclass, field
 from json import JSONDecodeError
 import json
 import re
@@ -9,6 +9,7 @@ from typing import Any
 from urllib import error, request
 
 from sts_ai_assistant.parsing.models import GameSnapshot
+from sts_ai_assistant.service.rule_based_advisor import RuleBasedAdvisor
 
 from .base import AssistantReply, ChatTurn, RecommendationResult
 from .prompts import (
@@ -20,6 +21,9 @@ from .prompts import (
 
 @dataclass(slots=True)
 class NullLLMClient:
+    def is_configured(self) -> bool:
+        return False
+
     def recommend(self, snapshot: GameSnapshot) -> RecommendationResult:
         return RecommendationResult(
             screen_type=snapshot.context.screen_type,
@@ -87,6 +91,11 @@ class NullLLMClient:
     def _collect_candidates(self, snapshot: GameSnapshot) -> list[str]:
         if snapshot.context.card_reward is not None:
             return [card.name for card in snapshot.context.card_reward.cards[:3]]
+        if snapshot.context.relic_reward is not None:
+            items = [relic.name for relic in snapshot.context.relic_reward.relics[:3]]
+            if snapshot.context.relic_reward.sapphire_key_available:
+                items = ["蓝钥匙", *items]
+            return items[:3]
         if snapshot.context.shop is not None:
             items = [card.name for card in snapshot.context.shop.cards[:2]]
             items.extend(relic.name for relic in snapshot.context.shop.relics[:1])
@@ -100,7 +109,10 @@ class NullLLMClient:
             "SHOP_SCREEN": "商店",
             "MAP": "地图",
             "EVENT": "事件",
+            "BOSS_REWARD": "Boss遗物",
             "COMBAT_REWARD": "战斗奖励",
+            "TREASURE": "宝箱",
+            "CHEST": "宝箱",
             "COMBAT": "战斗",
         }
         return mapping.get(screen_type.upper(), screen_type)
@@ -114,6 +126,13 @@ class OpenAICompatibleLLMClient:
     timeout_seconds: float = 30.0
     site_url: str = "http://127.0.0.1:5173"
     app_name: str = "STS AI Assistant"
+    rule_based_advisor: RuleBasedAdvisor = field(init=False)
+
+    def __post_init__(self) -> None:
+        self.rule_based_advisor = RuleBasedAdvisor()
+
+    def is_configured(self) -> bool:
+        return True
 
     def build_request_payload(
         self,
@@ -408,17 +427,31 @@ class OpenAICompatibleLLMClient:
         snapshot: GameSnapshot,
         text: str,
     ) -> RecommendationResult | None:
+        fallback = self.rule_based_advisor.recommend(snapshot)
         lowered = text.lower()
         action = self._infer_action(snapshot, lowered)
         target, alternatives = self._infer_target_and_alternatives(snapshot, lowered)
+        if target is None and fallback is not None:
+            target = fallback.primary_target
+        if not alternatives and fallback is not None:
+            alternatives = fallback.alternatives[:3]
         if action is None and target is None:
-            return None
+            return fallback
+        build_direction = self._infer_build_direction(lowered, target)
+        if fallback is not None and (
+            not target
+            or action in {None, "TAKE"}
+            and snapshot.context.screen_type.upper() == "CARD_REWARD"
+            and fallback.primary_target
+        ):
+            target = target or fallback.primary_target
+            build_direction = fallback.build_direction or build_direction
         return RecommendationResult(
             screen_type=snapshot.context.screen_type,
             suggested_action=action or "UNKNOWN",
             primary_target=target,
             reasoning="",
-            build_direction=self._infer_build_direction(lowered, target),
+            build_direction=build_direction,
             alternatives=alternatives,
         )
 
@@ -567,6 +600,11 @@ class OpenAICompatibleLLMClient:
     def _collect_candidates(self, snapshot: GameSnapshot) -> list[str]:
         if snapshot.context.card_reward is not None:
             return [card.name for card in snapshot.context.card_reward.cards[:3]]
+        if snapshot.context.relic_reward is not None:
+            items = [relic.name for relic in snapshot.context.relic_reward.relics[:3]]
+            if snapshot.context.relic_reward.sapphire_key_available:
+                items = ["蓝钥匙", *items]
+            return items[:3]
         if snapshot.context.shop is not None:
             items = [card.name for card in snapshot.context.shop.cards[:2]]
             items.extend(relic.name for relic in snapshot.context.shop.relics[:1])
@@ -655,7 +693,10 @@ class OpenAICompatibleLLMClient:
             "SHOP_SCREEN": "商店",
             "MAP": "地图",
             "EVENT": "事件",
+            "BOSS_REWARD": "Boss遗物",
             "COMBAT_REWARD": "战斗奖励",
+            "TREASURE": "宝箱",
+            "CHEST": "宝箱",
             "COMBAT": "战斗",
         }
         return mapping.get(screen_type.upper(), screen_type)

@@ -8,6 +8,7 @@ from typing import Any
 
 from sts_ai_assistant.llm.base import AssistantSession, RecommendationResult
 from sts_ai_assistant.parsing.models import GameSnapshot
+from sts_ai_assistant.service.build_profile import BuildProfileEvaluator
 
 
 class LatestStateStore:
@@ -16,11 +17,14 @@ class LatestStateStore:
         self.output_path.parent.mkdir(parents=True, exist_ok=True)
         self._lock = Lock()
         self._latest_snapshot: GameSnapshot | None = None
+        self._build_profile_evaluator = BuildProfileEvaluator()
         self._payload: dict[str, Any] = {
             "updated_at": None,
             "latest_state": None,
             "latest_recommendation": None,
+            "build_profile": None,
             "assistant": self._serialize_assistant(None),
+            "diagnostics": self._default_diagnostics(),
         }
 
     def update_snapshot(self, snapshot: GameSnapshot) -> None:
@@ -28,6 +32,7 @@ class LatestStateStore:
             self._latest_snapshot = snapshot
             self._payload["updated_at"] = self._now_iso()
             self._payload["latest_state"] = snapshot.to_dict()
+            self._payload["build_profile"] = self._build_profile_evaluator.evaluate(snapshot).to_dict()
             self._flush()
 
     def update_recommendation(
@@ -39,6 +44,7 @@ class LatestStateStore:
             self._latest_snapshot = snapshot
             self._payload["updated_at"] = self._now_iso()
             self._payload["latest_state"] = snapshot.to_dict()
+            self._payload["build_profile"] = self._build_profile_evaluator.evaluate(snapshot).to_dict()
             self._payload["latest_recommendation"] = recommendation.to_dict()
             self._flush()
 
@@ -46,6 +52,14 @@ class LatestStateStore:
         with self._lock:
             self._payload["updated_at"] = self._now_iso()
             self._payload["assistant"] = self._serialize_assistant(session)
+            self._flush()
+
+    def update_diagnostics(self, diagnostics: dict[str, Any]) -> None:
+        with self._lock:
+            merged = self._default_diagnostics()
+            merged.update(diagnostics)
+            self._payload["updated_at"] = self._now_iso()
+            self._payload["diagnostics"] = merged
             self._flush()
 
     def get_latest_snapshot(self) -> GameSnapshot | None:
@@ -67,6 +81,18 @@ class LatestStateStore:
                 "memory_enabled": True,
             }
         return session.to_dict(memory_enabled=True)
+
+    def _default_diagnostics(self) -> dict[str, Any]:
+        return {
+            "backend_ready": True,
+            "llm_configured": False,
+            "last_state_at": None,
+            "last_screen_type": None,
+            "recommendation_source": None,
+            "recommendation_action": None,
+            "has_combat_data": False,
+            "next_step": "先启动游戏并让 Communication Mod 推送状态。",
+        }
 
     def _flush(self) -> None:
         with self.output_path.open("w", encoding="utf-8") as handle:
